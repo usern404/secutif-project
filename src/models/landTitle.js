@@ -26,6 +26,7 @@ const createLandTitle = async (data, callback) => {
         locality: data.locality,
         email: data.email,
         hash: hash,
+        users:
       },
     });
 

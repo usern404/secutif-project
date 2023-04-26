@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum landTitleStatus {
+  OCCUPE
+  DISPONIBLE
+}
+
+model User {
+  id         String          @id @default(uuid())
+  firstname  String
+  lastname   String
+  emailUser  String          @unique
+  cni_number String
+  city       String
+  address    String?
+  phone      String
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  banks      User_Has_Bank[]
+  landTitle  landTitle[]
+
+  @@map("user")
+}
+
+model Bank {
+  id        String          @id @default(uuid())
+  name      String
+  city      String
+  locality  String
+  email     String          @unique
+  hash      String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  users     User_Has_Bank[]
+  landTitle landTitle[]
+
+  @@map("bank")
+}
+
+model landTitle {
+  id         String          @id @default(uuid())
+  number     Int
+  department String
+  vol        Int             @unique
+  folio      Int             @unique
+  status     landTitleStatus @default(DISPONIBLE)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  userId     String
+  user       User            @relation(fields: [userId], references: [id])
+  bankId     String
+  bank       Bank            @relation(fields: [bankId], references: [id])
+
+  @@map("land_title")
+}
+
+model User_Has_Bank {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  bankId String
+  bank   Bank   @relation(fields: [bankId], references: [id])
+
+  @@map("user_has_bank")
+}
